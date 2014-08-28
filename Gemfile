@@ -25,6 +25,7 @@ gem 'webmock'
 gem 'vcr'
 gem 'slim'
 gem 'swipebox'
+gem 'rails_12factor'
 
 group :development, :test do
   gem 'binding_of_caller'
