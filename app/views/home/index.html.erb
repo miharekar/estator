@@ -1,1 +1,16 @@
-<%= @estates.inspect %>
+<ul class="nav nav-tabs" role="tablist">
+  <li class="active"><a href="#bolha" data-toggle="tab">Bolha</a></li>
+  <li><a href="#nepremicnine" data-toggle="tab">Nepremičnine</a></li>
+  <li><a href="#salomon" data-toggle="tab">Salomon</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane active" id="bolha">
+    <%= render partial: 'estates', object: @bolha %>
+  </div>
+  <div class="tab-pane" id="nepremicnine">
+    <%= render partial: 'estates', object: @nepremicnine %>
+  </div>
+  <div class="tab-pane" id="salomon">
+    <%= render partial: 'estates', object: @salomon %>
+  </div>
+</div>

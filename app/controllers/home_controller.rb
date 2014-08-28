@@ -2,12 +2,9 @@ require 'open-uri'
 
 class HomeController < ApplicationController
   def index
-    @estates = {
-      bolha: bolha,
-      nepremicnine: nepremicnine,
-      salomon: salomon
-    }
-    render json: @estates
+    @bolha = bolha
+    @nepremicnine = nepremicnine
+    @salomon = salomon
   end
 
   private

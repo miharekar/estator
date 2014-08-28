@@ -1,0 +1,16 @@
+- estates.in_groups_of(3, false) do |es|
+  .row
+  - es.each do |e|
+    .col-sm-6.col-md-4
+      .thumbnail
+        .gallery
+          - e[:all_images].each do |img|
+            a.swipebox href=img rel=Digest::MD5.hexdigest(e.to_s)
+              img src=img
+        .caption
+          h3=e[:price]
+          p=e[:basic].html_safe
+          hr
+          p=e[:extra].html_safe
+          p
+            a.btn.btn-primary.btn-block href=e[:url] Poglej

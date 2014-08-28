@@ -23,6 +23,8 @@ gem 'nokogiri-styles'
 
 gem 'webmock'
 gem 'vcr'
+gem 'slim'
+gem 'swipebox'
 
 group :development, :test do
   gem 'binding_of_caller'
