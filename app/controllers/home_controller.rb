@@ -42,7 +42,7 @@ class HomeController < ApplicationController
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.main-data table').to_s,
-          extra: estate_html.at_css('.opis').to_s,
+          extra: estate_html.at_css('.web-opis').to_s,
           price: estate.at_css('.cena').text,
           all_images: estate_html.css('a.rsImg').map{ |a| a.attr('data-rsbigimg') },
           size: estate.at_css('.velikost').text.gsub(',', '.').to_f,
@@ -63,7 +63,7 @@ class HomeController < ApplicationController
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('#advAttr table').to_s,
-          extra: estate_html.at_css('#moreAttr article').to_s,
+          extra: estate_html.css('#moreAttr article').to_s,
           price: estate.at_css('.price').text,
           all_images: estate_html.css('.thumbsList a').map{ |a| a['href'] },
           size: get_salomon_size(estate_html),
