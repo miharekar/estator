@@ -5,7 +5,7 @@
       .thumbnail
         .gallery
           - e[:all_images].each do |img|
-            a.swipebox href=img rel=Digest::MD5.hexdigest(e.to_s)
+            a.swipebox href=img rel=e[:md5]
               img src=img
         .caption
           h3=e[:price]

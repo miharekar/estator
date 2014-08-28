@@ -21,11 +21,10 @@ gem 'unicorn'
 gem 'nokogiri'
 gem 'nokogiri-styles'
 
-gem 'webmock'
-gem 'vcr'
 gem 'slim'
 gem 'swipebox'
 gem 'rails_12factor'
+gem 'dalli'
 
 group :development, :test do
   gem 'binding_of_caller'

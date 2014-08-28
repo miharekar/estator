@@ -14,7 +14,8 @@ class HomeController < ApplicationController
     html = Nokogiri::HTML(open(url))
     html.css('#list .adGridContent').map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
-      cache estate_url do
+      md5 = Digest::MD5.hexdigest(estate_url)
+      Rails.cache.fetch md5 do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.oglas-podatki').to_s,
@@ -23,7 +24,8 @@ class HomeController < ApplicationController
           all_images: estate_html.css('a.gal').map{ |img| img['href'] },
           size: get_bolha_size(estate_html),
           date: get_bolha_date(estate_html),
-          url: estate_url
+          url: estate_url,
+          md5: md5
         }
       end
     }.sort_by{ |e| e[:date] }.reverse
@@ -34,8 +36,9 @@ class HomeController < ApplicationController
     html = Nokogiri::HTML(open(url))
     html.css('.oglas_container').map{ |estate|
       estate_url = "http://www.nepremicnine.net#{estate.at_css('a')['href']}"
+      md5 = Digest::MD5.hexdigest(estate_url)
       next if estate.at_css('img')['src'] == '/images/n-1.jpg'
-      cache estate_url do
+      Rails.cache.fetch md5 do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.main-data table').to_s,
@@ -43,7 +46,8 @@ class HomeController < ApplicationController
           price: estate.at_css('.cena').text,
           all_images: estate_html.css('a.rsImg').map{ |a| a.attr('data-rsbigimg') },
           size: estate.at_css('.velikost').text.gsub(',', '.').to_f,
-          url: estate_url
+          url: estate_url,
+          md5: md5
         }
       end
     }.compact
@@ -54,7 +58,8 @@ class HomeController < ApplicationController
     html = Nokogiri::HTML(open(url))
     html.css('#advertList article:not(.banner20)').map{ |estate|
       estate_url = "http://www.salomon.si#{estate.at_css('a')['href']}"
-      cache estate_url do
+      md5 = Digest::MD5.hexdigest(estate_url)
+      Rails.cache.fetch md5 do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('#advAttr table').to_s,
@@ -62,7 +67,8 @@ class HomeController < ApplicationController
           price: estate.at_css('.price').text,
           all_images: estate_html.css('.thumbsList a').map{ |a| a['href'] },
           size: get_salomon_size(estate_html),
-          url: estate_url
+          url: estate_url,
+          md5: md5
         }
       end
     }
@@ -90,13 +96,6 @@ class HomeController < ApplicationController
       if row.text =~ /Površina/
         return rows[i+1].children.last.text.gsub(',', '.').to_f
       end
-    end
-  end
-
-  def cache url
-    url = url.split('/').values_at(2, -1).join('/')
-    VCR.use_cassette url do
-      yield
     end
   end
 end
