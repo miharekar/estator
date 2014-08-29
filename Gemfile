@@ -27,6 +27,8 @@ gem 'swipebox'
 gem 'rails_12factor'
 gem 'dalli'
 
+gem 'newrelic_rpm'
+
 group :development, :test do
   gem 'binding_of_caller'
   gem 'better_errors'
