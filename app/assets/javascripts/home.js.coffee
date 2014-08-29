@@ -2,7 +2,6 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-load_swipebox = ->
+$(document).on 'page:change', ->
   $('.swipebox').swipebox()
-
-$(document).on 'page:change', load_swipebox
+  $('.nav-tabs').stickyTabs()

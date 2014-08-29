@@ -13,4 +13,5 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require swipebox
+//= require jquery.stickytabs
 //= require_tree .
