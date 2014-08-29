@@ -10,7 +10,7 @@ class HomeController < ApplicationController
   private
 
   def bolha
-    url = 'http://www.bolha.com/nepremicnine/stanovanja?adTypeH=02_Oddam/&location=Osrednjeslovenska/Ljubljana/&hasImages=Oglasi%20s%20fotografijami&viewType=30&priceSortField=400%7C700&renovatedYear=2012%20in%20ve%C4%8D%7C%7C2010%20do%202011'
+    url = 'http://www.bolha.com/nepremicnine?adTypeH=02_Oddam/&viewType=30&priceSortField=400%7C700&hasImages=Oglasi%20s%20fotografijami&location=Osrednjeslovenska/Ljubljana/'
     html = Nokogiri::HTML(open(url))
     html.css('#list .adGridContent').map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
