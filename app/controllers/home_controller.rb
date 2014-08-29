@@ -23,12 +23,11 @@ class HomeController < ApplicationController
           price: estate.at_css('.price').text,
           all_images: estate_html.css('a.gal').map{ |img| img['href'] },
           size: get_bolha_size(estate_html),
-          date: get_bolha_date(estate_html),
           url: estate_url,
           md5: md5
         }
       end
-    }.sort_by{ |e| e[:date] }.reverse
+    }
   end
 
   def nepremicnine
@@ -72,14 +71,6 @@ class HomeController < ApplicationController
         }
       end
     }
-  end
-
-  def get_bolha_date html
-    html.css('.adInfo p').each do |row|
-      if row.text =~ /Vpisano/
-        return Time.parse(row.children.last)
-      end
-    end
   end
 
   def get_bolha_size html
