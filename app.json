@@ -1,0 +1,11 @@
+{
+  "name": "Estator",
+  "description": "A website for displaying estate searches from Bolha, Nepremičnine and Salomon.",
+  "website": "http://estator.herokuapp.com/",
+  "repository": "https://github.com/mrfoto/estator",
+  "logo": "http://upload.wikimedia.org/wikipedia/commons/c/c3/Ruby_on_Rails_logo.svg",
+  "env": {
+    "RAILS_ENV": "production"
+  },
+  "addons": ["memcachier"]
+}
