@@ -14,7 +14,7 @@ class HomeController < ApplicationController
   private
 
   def bolha
-    bolha_estates.map{ |estate|
+    nokogirify(BOLHA_URL).css('#list .adGridContent').map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
       Rails.cache.fetch estate_url do
         estate_html = Nokogiri::HTML(open(estate_url))
@@ -32,7 +32,7 @@ class HomeController < ApplicationController
   end
 
   def nepremicnine
-    nepremicnine_estates.map{ |estate|
+    nokogirify(NEPREMICNINE_URL).css('.oglas_container').map{ |estate|
       estate_url = "http://www.nepremicnine.net#{estate.at_css('a')['href']}"
       next if estate.at_css('img')['src'] == '/images/n-1.jpg'
       Rails.cache.fetch estate_url do
@@ -51,7 +51,7 @@ class HomeController < ApplicationController
   end
 
   def salomon
-    salomon_estates.map{ |estate|
+    nokogirify(SALOMON_URL).css('#advertList article:not(.banner20)').map{ |estate|
       estate_url = "http://www.salomon.si#{estate.at_css('a')['href']}"
       Rails.cache.fetch estate_url do
         estate_html = Nokogiri::HTML(open(estate_url))
@@ -68,25 +68,11 @@ class HomeController < ApplicationController
     }
   end
 
-  def bolha_estates
-    html = Rails.cache.fetch BOLHA_URL, expires_in: 1.hour, compress: true do
-      open(BOLHA_URL).read
+  def nokogirify url
+    html = Rails.cache.fetch url, expires_in: 1.hour, compress: true do
+      open(url).read
     end
-    Nokogiri::HTML(html).css('#list .adGridContent')
-  end
-
-  def nepremicnine_estates
-    html = Rails.cache.fetch NEPREMICNINE_URL, expires_in: 1.hour, compress: true do
-      open(NEPREMICNINE_URL).read
-    end
-    Nokogiri::HTML(html).css('.oglas_container')
-  end
-
-  def salomon_estates
-    html = Rails.cache.fetch SALOMON_URL, expires_in: 1.hour, compress: true  do
-      open(SALOMON_URL).read
-    end
-    Nokogiri::HTML(html).css('#advertList article:not(.banner20)')
+    Nokogiri::HTML(html)
   end
 
   def get_bolha_size html
