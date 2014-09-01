@@ -8,7 +8,12 @@
             a.swipebox href=img rel=e[:md5]
               img src=img
         .caption
-          h3=e[:price]
+          .label.label-info
+            =e[:size]
+            |m
+            sup=2
+          .label.label-primary
+            =e[:price]
           p=e[:basic].html_safe
           hr
           p=e[:extra].html_safe
