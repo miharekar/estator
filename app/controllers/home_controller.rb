@@ -1,6 +1,10 @@
 require 'open-uri'
 
 class HomeController < ApplicationController
+  BOLHA_URL = 'http://www.bolha.com/nepremicnine?adTypeH=02_Oddam/&viewType=30&priceSortField=400%7C700&hasImages=Oglasi%20s%20fotografijami&location=Osrednjeslovenska/Ljubljana/'
+  NEPREMICNINE_URL = 'http://www.nepremicnine.net/nepremicnine.html?n=1&d=197&p=3&r=14&c1=400&c2=700&s=16'
+  SALOMON_URL ='http://www.salomon.si/oglasi/nepremicnine/stanovanje?q=&mmType=1&filters=1471s-83851x1472s-90256x447m-27555&onPage=100&priceFrom=400&priceTo=700'
+
   def index
     @bolha = bolha
     @nepremicnine = nepremicnine
@@ -10,12 +14,9 @@ class HomeController < ApplicationController
   private
 
   def bolha
-    url = 'http://www.bolha.com/nepremicnine?adTypeH=02_Oddam/&viewType=30&priceSortField=400%7C700&hasImages=Oglasi%20s%20fotografijami&location=Osrednjeslovenska/Ljubljana/'
-    html = Nokogiri::HTML(open(url))
-    html.css('#list .adGridContent').map{ |estate|
+    bolha_estates.map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
-      md5 = Digest::MD5.hexdigest(estate_url)
-      Rails.cache.fetch md5 do
+      Rails.cache.fetch estate_url do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.oglas-podatki').to_s,
@@ -24,20 +25,17 @@ class HomeController < ApplicationController
           all_images: estate_html.css('a.gal').map{ |img| img['href'] },
           size: get_bolha_size(estate_html),
           url: estate_url,
-          md5: md5
+          md5: Digest::MD5.hexdigest(estate_url)
         }
       end
     }
   end
 
   def nepremicnine
-    url = 'http://www.nepremicnine.net/nepremicnine.html?n=1&d=197&p=3&r=14&c1=400&c2=700&s=16'
-    html = Nokogiri::HTML(open(url))
-    html.css('.oglas_container').map{ |estate|
+    nepremicnine_estates.map{ |estate|
       estate_url = "http://www.nepremicnine.net#{estate.at_css('a')['href']}"
-      md5 = Digest::MD5.hexdigest(estate_url)
       next if estate.at_css('img')['src'] == '/images/n-1.jpg'
-      Rails.cache.fetch md5 do
+      Rails.cache.fetch estate_url do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.main-data table').to_s,
@@ -46,19 +44,16 @@ class HomeController < ApplicationController
           all_images: estate_html.css('a.rsImg').map{ |a| a.attr('data-rsbigimg') },
           size: estate.at_css('.velikost').text.gsub(',', '.').to_f,
           url: estate_url,
-          md5: md5
+          md5: Digest::MD5.hexdigest(estate_url)
         }
       end
     }.compact
   end
 
   def salomon
-    url = 'http://www.salomon.si/oglasi/nepremicnine/stanovanje?q=&mmType=1&filters=1471s-83851x1472s-90256x447m-27555&onPage=100&priceFrom=400&priceTo=700'
-    html = Nokogiri::HTML(open(url))
-    html.css('#advertList article:not(.banner20)').map{ |estate|
+    salomon_estates.map{ |estate|
       estate_url = "http://www.salomon.si#{estate.at_css('a')['href']}"
-      md5 = Digest::MD5.hexdigest(estate_url)
-      Rails.cache.fetch md5 do
+      Rails.cache.fetch estate_url do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('#advAttr table').to_s,
@@ -67,10 +62,31 @@ class HomeController < ApplicationController
           all_images: estate_html.css('.thumbsList a').map{ |a| a['href'] },
           size: get_salomon_size(estate_html),
           url: estate_url,
-          md5: md5
+          md5: Digest::MD5.hexdigest(estate_url)
         }
       end
     }
+  end
+
+  def bolha_estates
+    html = Rails.cache.fetch BOLHA_URL, expires_in: 1.hour, compress: true do
+      open(BOLHA_URL).read
+    end
+    Nokogiri::HTML(html).css('#list .adGridContent')
+  end
+
+  def nepremicnine_estates
+    html = Rails.cache.fetch NEPREMICNINE_URL, expires_in: 1.hour, compress: true do
+      open(NEPREMICNINE_URL).read
+    end
+    Nokogiri::HTML(html).css('.oglas_container')
+  end
+
+  def salomon_estates
+    html = Rails.cache.fetch SALOMON_URL, expires_in: 1.hour, compress: true  do
+      open(SALOMON_URL).read
+    end
+    Nokogiri::HTML(html).css('#advertList article:not(.banner20)')
   end
 
   def get_bolha_size html
@@ -85,7 +101,8 @@ class HomeController < ApplicationController
     rows = html.css('#advAttr tr')
     rows.each_with_index do |row, i|
       if row.text =~ /Površina/
-        return rows[i+1].children.last.text.gsub(',', '.').to_f
+        index = row.css('th').map(&:text).index('Površina')
+        return rows[i+1].children[index].text.gsub(',', '.').to_f
       end
     end
   end
