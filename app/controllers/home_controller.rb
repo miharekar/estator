@@ -81,6 +81,7 @@ class HomeController < ApplicationController
         return row.at_css('b').text.gsub(',', '.').to_f
       end
     end
+    0
   end
 
   def get_salomon_size html
@@ -91,5 +92,6 @@ class HomeController < ApplicationController
         return rows[i+1].children[index].text.gsub(',', '.').to_f
       end
     end
+    0
   end
 end
