@@ -16,7 +16,7 @@ class HomeController < ApplicationController
   def bolha
     nokogirify(BOLHA_URL).css('#list .adGridContent').map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
-      Rails.cache.fetch estate_url do
+      Rails.cache.fetch estate_url, expires_in: 1.hour, compress: true do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.oglas-podatki').to_s,
@@ -35,7 +35,7 @@ class HomeController < ApplicationController
     nokogirify(NEPREMICNINE_URL).css('.oglas_container').map{ |estate|
       estate_url = "http://www.nepremicnine.net#{estate.at_css('a')['href']}"
       next if estate.at_css('img')['src'] == '/images/n-1.jpg'
-      Rails.cache.fetch estate_url do
+      Rails.cache.fetch estate_url, expires_in: 1.hour, compress: true do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('.main-data table').to_s,
@@ -53,7 +53,7 @@ class HomeController < ApplicationController
   def salomon
     nokogirify(SALOMON_URL).css('#advertList article:not(.banner20)').map{ |estate|
       estate_url = "http://www.salomon.si#{estate.at_css('a')['href']}"
-      Rails.cache.fetch estate_url do
+      Rails.cache.fetch estate_url, expires_in: 1.hour, compress: true do
         estate_html = Nokogiri::HTML(open(estate_url))
         {
           basic: estate_html.at_css('#advAttr table').to_s,
