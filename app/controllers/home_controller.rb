@@ -6,9 +6,9 @@ class HomeController < ApplicationController
   SALOMON_URL ='http://www.salomon.si/oglasi/nepremicnine/stanovanje?q=&mmType=1&filters=1471s-83851x1472s-90256x447m-27555&onPage=100&priceFrom=399&priceTo=700'
 
   def index
-    @bolha = bolha
-    @nepremicnine = nepremicnine
-    @salomon = salomon
+    [:bolha, :nepremicnine, :salomon].each do |site|
+      instance_variable_set("@#{site}", send(site))
+    end
   end
 
   private
