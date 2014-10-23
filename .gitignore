@@ -17,3 +17,6 @@
 
 # Ignore VCR
 /cassettes
+
+# Ignore pow
+.pow*

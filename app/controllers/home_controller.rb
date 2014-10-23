@@ -14,7 +14,7 @@ class HomeController < ApplicationController
   private
 
   def bolha
-    nokogirify(BOLHA_URL).css('#list .adGridContent').map{ |estate|
+    nokogirify(BOLHA_URL).css('.ad').map{ |estate|
       estate_url = "http://www.bolha.com#{estate.at_css('a')['href']}"
       Rails.cache.fetch estate_url, expires_in: 1.hour, compress: true do
         estate_html = Nokogiri::HTML(open(estate_url))
